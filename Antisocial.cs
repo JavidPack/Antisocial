@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace Antisocial
 {
@@ -88,7 +89,7 @@ namespace Antisocial
 			//	if (context == 11 || context == 9)
 			//	{
 			//		Main.HoverItem.social = true;
-			//		if (context == 11) // Only works on accessories for now.
+			//+		if (context == ItemSlot.Context.EquipAccessoryVanity) // Only works on accessories for now. ItemSlot.Context.EquipAccessoryVanity == 11
 			//+			Main.HoverItem.social = false; // it is simpler to write this in IL.
 			//	}
 
@@ -102,7 +103,7 @@ namespace Antisocial
 					Label afterIf11 = il.DefineLabel();
 
 					yield return new CodeInstruction(OpCodes.Ldarg_1);
-					yield return new CodeInstruction(OpCodes.Ldc_I4_S, (byte)11);
+					yield return new CodeInstruction(OpCodes.Ldc_I4_S, (byte)ItemSlot.Context.EquipAccessoryVanity);
 					yield return new CodeInstruction(OpCodes.Bne_Un_S, afterIf11);
 
 					yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Main), nameof(Main.HoverItem)));
