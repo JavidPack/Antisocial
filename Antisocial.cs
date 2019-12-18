@@ -1,123 +1,101 @@
-﻿using Harmony;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace Antisocial
 {
 	public class Antisocial : Mod
 	{
-		const string HarmonyID = "mod.Antisocial";
-		HarmonyInstance harmonyInstance;
+		internal Item hoveredItem;
 
-		public override void Load()
-		{
-			harmonyInstance = HarmonyInstance.Create(HarmonyID);
-			if (!harmonyInstance.HasAnyPatches(HarmonyID)) // In case Unload failed, don't double up.
-			{
-				harmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
+		internal const string ModifyAntiSocialConfig_Permission = "ModifyAntisocialConfig";
+		internal const string ModifyAntiSocialConfig_Display = "Modify Antisocial Config";
+
+		public override void Load() {
+			On.Terraria.UI.ItemSlot.MouseHover_ItemArray_int_int += ItemSlot_MouseHover_ItemArray_int_int;
+		}
+
+		private void ItemSlot_MouseHover_ItemArray_int_int(On.Terraria.UI.ItemSlot.orig_MouseHover_ItemArray_int_int orig, Item[] inv, int context, int slot) {
+			orig(inv, context, slot);
+			// EquipArmorVanity = 9;
+			// EquipAccessoryVanity = 11;
+			hoveredItem = null;
+			if (context == 11) {
+				int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
+				if (slot < (socialAccessories == -1 ? 18 + Main.LocalPlayer.extraAccessorySlots : 13 + socialAccessories)) {
+					hoveredItem = Main.HoverItem;
+					Main.HoverItem.social = false;
+				}
+			}
+			if (context == 9 && ModContent.GetInstance<ServerConfig>().SocialArmor) {
+				hoveredItem = Main.HoverItem;
+				Main.HoverItem.social = false;
 			}
 		}
 
-		public override void Unload()
-		{
-			if (harmonyInstance != null)
-			{
-				harmonyInstance.UnpatchAll(HarmonyID);
+		public override void PostSetupContent() {
+			Mod HEROsMod = ModLoader.GetMod("HEROsMod");
+			if (HEROsMod != null) {
+				HEROsMod.Call(
+					"AddPermission",
+					ModifyAntiSocialConfig_Permission,
+					ModifyAntiSocialConfig_Display
+				);
 			}
 		}
 	}
 
 	public class AntisocialPlayer : ModPlayer
 	{
-		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff)
-		{
-			// TODO, change to 13 or have a ModConfig
-			for (int k = 13; k < 18 + player.extraAccessorySlots; k++)
-			{
+		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff) {
+			int start = ModContent.GetInstance<ServerConfig>().SocialArmor ? 10 : 13;
+			int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
+			int end = socialAccessories == -1 ? 18 + player.extraAccessorySlots : 13 + socialAccessories;
+			end = Utils.Clamp(end, 13, 18 + player.extraAccessorySlots);
+
+			for (int k = start; k < end; k++) {
 				player.VanillaUpdateEquip(player.armor[k]);
 			}
-			for (int l = 13; l < 18 + player.extraAccessorySlots; l++)
-			{
+			for (int l = start; l < end; l++) {
 				player.VanillaUpdateAccessory(player.whoAmI, player.armor[l], false /*player.hideVisual[l]*/, ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
 			}
 		}
 
 		// some problems, such as Chlorophyte rapid fire.
-		//public override void PostUpdateEquips()
-		//{
-		//	Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
-		//	Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
-		//	Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
-		//	player.head = player.armor[0].headSlot;
-		//	player.body = player.armor[1].bodySlot;
-		//	player.legs = player.armor[2].legSlot;
-		//	player.UpdateArmorSets(player.whoAmI);
-		//	Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
-		//	Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
-		//	Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
-		//	player.head = player.armor[0].headSlot;
-		//	player.body = player.armor[1].bodySlot;
-		//	player.legs = player.armor[2].legSlot;
-		//}
-	}
-
-	public class AntisocialGlobalItem : GlobalItem
-	{
-		public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
-		{
-			if (item.social && item.accessory)
-			{
-				//tooltips.RemoveAll(x => x.Name == "Social" || x.Name == "SocialDesc");
-				tooltips.Add(new TooltipLine(mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
+		public override void PostUpdateEquips() {
+			if (ModContent.GetInstance<ServerConfig>().SocialArmor) {
+				Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
+				Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
+				Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
+				player.head = player.armor[0].headSlot;
+				player.body = player.armor[1].bodySlot;
+				player.legs = player.armor[2].legSlot;
+				player.UpdateArmorSets(player.whoAmI);
+				Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
+				Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
+				Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
+				player.head = player.armor[0].headSlot;
+				player.body = player.armor[1].bodySlot;
+				player.legs = player.armor[2].legSlot;
 			}
 		}
 	}
 
-	[HarmonyPatch(typeof(Terraria.UI.ItemSlot))]
-	[HarmonyPatch("MouseHover")]
-	[HarmonyPatch(new Type[] { typeof(Item[]), typeof(int), typeof(int) })]
-	public class MouseText_DrawItemTooltip_Patcher
+	public class AntisocialGlobalItem : GlobalItem
 	{
-		static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
-		{
-			//	Modifies this code:
-			//	if (context == 11 || context == 9)
-			//	{
-			//		Main.HoverItem.social = true;
-			//+		if (context == ItemSlot.Context.EquipAccessoryVanity) // Only works on accessories for now. ItemSlot.Context.EquipAccessoryVanity == 11
-			//+			Main.HoverItem.social = false; // it is simpler to write this in IL.
-			//	}
-
-			bool success = false;
-			foreach (CodeInstruction instruction in instructions)
-			{
-				if (instruction.opcode == OpCodes.Stfld && ((FieldInfo)instruction.operand) == AccessTools.Field(typeof(Item), nameof
-					(Item.social)))
-				{
-					yield return instruction;
-					Label afterIf11 = il.DefineLabel();
-
-					yield return new CodeInstruction(OpCodes.Ldarg_1);
-					yield return new CodeInstruction(OpCodes.Ldc_I4_S, (byte)ItemSlot.Context.EquipAccessoryVanity);
-					yield return new CodeInstruction(OpCodes.Bne_Un_S, afterIf11);
-
-					yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Main), nameof(Main.HoverItem)));
-					yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-					yield return new CodeInstruction(OpCodes.Stfld, AccessTools.Field(typeof(Item), nameof
-					(Item.social)));
-					yield return new CodeInstruction(OpCodes.Nop) { labels = new List<Label>() { afterIf11 } };
-					success = true;
-				}
-				else
-					yield return instruction;
+		public override void ModifyTooltips(Item item, List<TooltipLine> tooltips) {
+			// leaving social this late means .defense tooltips not added.
+			//bool addTooltip = false;
+			//if (item.social && item.accessory) {
+			//	addTooltip = true;
+			//}
+			//if (item.social && (item.headSlot > 0 || item.bodySlot > 0 || item.legSlot > 0) && ModContent.GetInstance<ServerConfig>().SocialArmor) {
+			//	addTooltip = true;
+			//}
+			if (item == ModContent.GetInstance<Antisocial>().hoveredItem) {
+				//tooltips.RemoveAll(x => x.Name == "Social" || x.Name == "SocialDesc");
+				tooltips.Add(new TooltipLine(mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
 			}
-			if(!success)
-				ErrorLogger.Log($"Antisocial patch failure. Please report to website. {ModLoader.versionedName}, {ModLoader.compressedPlatformRepresentation}, Antisocial {ModLoader.GetMod("Antisocial")?.Version}");
 		}
 	}
 }

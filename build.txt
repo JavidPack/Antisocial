@@ -1,9 +1,6 @@
-﻿author = jopojelly
-version = 1.1
+﻿version = 1.2
 displayName = Antisocial
 homepage = https://forums.terraria.org/index.php?threads/antisocial-enables-all-social-accessory-slots.56955/
 includeSource = true
-dllReferences = 0Harmony
-languageVersion = 6
 includePDB = false
 buildIgnore = .vs\*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, .gitignore, .git\*

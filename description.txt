@@ -1,1 +1,5 @@
 ﻿Antisocial allows all social accessory slots to be used as normal accessory slots. It's super cheaty, obviously.
+
+A config allows for social armor to also be used, as well as limiting the number of affected social accessory slots.
+
+When using HerosMod, the "Modify Antisocial Config" can be used to limit who can change the config settings.
