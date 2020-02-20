@@ -53,11 +53,18 @@ namespace Antisocial
 			int end = socialAccessories == -1 ? 18 + player.extraAccessorySlots : 13 + socialAccessories;
 			end = Utils.Clamp(end, 13, 18 + player.extraAccessorySlots);
 
+			bool olddd2Accessory = player.dd2Accessory;
 			for (int k = start; k < end; k++) {
 				player.VanillaUpdateEquip(player.armor[k]);
 			}
 			for (int l = start; l < end; l++) {
 				player.VanillaUpdateAccessory(player.whoAmI, player.armor[l], false /*player.hideVisual[l]*/, ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
+			}
+
+			//PlayerHooks.UpdateEquips is after this in vanilla, so we need to fix manually
+			if (!olddd2Accessory && player.dd2Accessory) {
+				player.minionDamage += 0.1f;
+				player.maxTurrets++;
 			}
 		}
 
