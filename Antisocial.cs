@@ -22,7 +22,7 @@ namespace Antisocial
 			hoveredItem = null;
 			if (context == 11) {
 				int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
-				if (slot < (socialAccessories == -1 ? 18 + Main.LocalPlayer.extraAccessorySlots : 13 + socialAccessories)) {
+				if (slot < (socialAccessories == -1 ? 18 + Main.LocalPlayer.GetAmountOfExtraAccessorySlotsToShow() : 13 + socialAccessories)) {
 					hoveredItem = Main.HoverItem;
 					Main.HoverItem.social = false;
 				}
@@ -34,7 +34,7 @@ namespace Antisocial
 		}
 
 		public override void PostSetupContent() {
-			Mod HEROsMod = ModLoader.GetMod("HEROsMod");
+			ModLoader.TryGetMod("HEROsMod", out Mod HEROsMod);
 			if (HEROsMod != null) {
 				HEROsMod.Call(
 					"AddPermission",
@@ -47,43 +47,40 @@ namespace Antisocial
 
 	public class AntisocialPlayer : ModPlayer
 	{
-		public override void UpdateEquips(ref bool wallSpeedBuff, ref bool tileSpeedBuff, ref bool tileRangeBuff) {
+        public override void UpdateEquips()
+        {
 			int start = ModContent.GetInstance<ServerConfig>().SocialArmor ? 10 : 13;
 			int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
-			int end = socialAccessories == -1 ? 18 + player.extraAccessorySlots : 13 + socialAccessories;
-			end = Utils.Clamp(end, 13, 18 + player.extraAccessorySlots);
+			int end = socialAccessories == -1 ? 18 + Player.GetAmountOfExtraAccessorySlotsToShow() : 13 + socialAccessories;
+			end = Utils.Clamp(end, 13, 18 + Player.GetAmountOfExtraAccessorySlotsToShow());
 
-			bool olddd2Accessory = player.dd2Accessory;
 			for (int k = start; k < end; k++) {
-				player.VanillaUpdateEquip(player.armor[k]);
+				if (Player.IsAValidEquipmentSlotForIteration(k))
+					Player.VanillaUpdateEquip(Player.armor[k]);
 			}
-			for (int l = start; l < end; l++) {
-				player.VanillaUpdateAccessory(player.whoAmI, player.armor[l], false /*player.hideVisual[l]*/, ref wallSpeedBuff, ref tileSpeedBuff, ref tileRangeBuff);
-			}
-
-			//PlayerHooks.UpdateEquips is after this in vanilla, so we need to fix manually
-			if (!olddd2Accessory && player.dd2Accessory) {
-				player.minionDamage += 0.1f;
-				player.maxTurrets++;
+			for (int l = start; l < end; l++)
+			{
+				if (Player.IsAValidEquipmentSlotForIteration(l))
+					Player.ApplyEquipFunctional(Player.armor[l], Player.hideVisibleAccessory[l - 10]);
 			}
 		}
 
 		// some problems, such as Chlorophyte rapid fire.
 		public override void PostUpdateEquips() {
 			if (ModContent.GetInstance<ServerConfig>().SocialArmor) {
-				Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
-				Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
-				Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
-				player.head = player.armor[0].headSlot;
-				player.body = player.armor[1].bodySlot;
-				player.legs = player.armor[2].legSlot;
-				player.UpdateArmorSets(player.whoAmI);
-				Utils.Swap<Item>(ref player.armor[0], ref player.armor[10]);
-				Utils.Swap<Item>(ref player.armor[1], ref player.armor[11]);
-				Utils.Swap<Item>(ref player.armor[2], ref player.armor[12]);
-				player.head = player.armor[0].headSlot;
-				player.body = player.armor[1].bodySlot;
-				player.legs = player.armor[2].legSlot;
+				Utils.Swap<Item>(ref Player.armor[0], ref Player.armor[10]);
+				Utils.Swap<Item>(ref Player.armor[1], ref Player.armor[11]);
+				Utils.Swap<Item>(ref Player.armor[2], ref Player.armor[12]);
+				Player.head = Player.armor[0].headSlot;
+				Player.body = Player.armor[1].bodySlot;
+				Player.legs = Player.armor[2].legSlot;
+				Player.UpdateArmorSets(Player.whoAmI);
+				Utils.Swap<Item>(ref Player.armor[0], ref Player.armor[10]);
+				Utils.Swap<Item>(ref Player.armor[1], ref Player.armor[11]);
+				Utils.Swap<Item>(ref Player.armor[2], ref Player.armor[12]);
+				Player.head = Player.armor[0].headSlot;
+				Player.body = Player.armor[1].bodySlot;
+				Player.legs = Player.armor[2].legSlot;
 			}
 		}
 	}
@@ -101,7 +98,7 @@ namespace Antisocial
 			//}
 			if (item == ModContent.GetInstance<Antisocial>().hoveredItem) {
 				//tooltips.RemoveAll(x => x.Name == "Social" || x.Name == "SocialDesc");
-				tooltips.Add(new TooltipLine(mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
+				tooltips.Add(new TooltipLine(Mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
 			}
 		}
 	}
