@@ -26,7 +26,7 @@ namespace Antisocial
 		public bool SocialArmor { get; set; }
 
 		public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message) {
-			Mod HEROsMod = ModLoader.GetMod("HEROsMod");
+			ModLoader.TryGetMod("HEROsMod", out Mod HEROsMod);
 			if (HEROsMod != null && HEROsMod.Version >= new Version(0, 2, 2)) {
 				if (HEROsMod.Call("HasPermission", whoAmI, Antisocial.ModifyAntiSocialConfig_Permission) is bool result && result)
 					return true;
