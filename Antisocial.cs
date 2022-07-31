@@ -22,7 +22,10 @@ namespace Antisocial
 			hoveredItem = null;
 			if (context == 11) {
 				int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
-				if (slot < (socialAccessories == -1 ? 18 + Main.LocalPlayer.GetAmountOfExtraAccessorySlotsToShow() : 13 + socialAccessories)) {
+				// GetAmountOfExtraAccessorySlotsToShow only cared about what can be shown, not what is available, IsAValidEquipmentSlotForIteration is for "can this be used".
+				int maxSlotToAffect = socialAccessories == -1 ? 20 : 13 + socialAccessories;
+				bool skip = slot == 18 && !Main.LocalPlayer.IsAValidEquipmentSlotForIteration(18) || slot == 19 && !Main.LocalPlayer.IsAValidEquipmentSlotForIteration(19);
+				if (!skip && slot < maxSlotToAffect) {
 					hoveredItem = Main.HoverItem;
 					Main.HoverItem.social = false;
 				}
@@ -51,8 +54,8 @@ namespace Antisocial
         {
 			int start = ModContent.GetInstance<ServerConfig>().SocialArmor ? 10 : 13;
 			int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
-			int end = socialAccessories == -1 ? 18 + Player.GetAmountOfExtraAccessorySlotsToShow() : 13 + socialAccessories;
-			end = Utils.Clamp(end, 13, 18 + Player.GetAmountOfExtraAccessorySlotsToShow());
+			int end = socialAccessories == -1 ? 20 : 13 + socialAccessories;
+			end = Utils.Clamp(end, 13, 20);
 
 			for (int k = start; k < end; k++) {
 				if (Player.IsAValidEquipmentSlotForIteration(k))

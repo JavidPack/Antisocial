@@ -17,7 +17,7 @@ namespace Antisocial
 		[DefaultValue(-1)]
 		[Range(-1, 7)]
 		[Label("[i:156] Antisocial Accessories")]
-		[Tooltip("Customize how many slots are anti-social slots. -1 means all.")]
+		[Tooltip("Customize how many slots are anti-social slots. -1 means all.\nNote that the master mode slot is #7, even if the demon heart slot is not unlocked and displayed")]
 		public int SocialAccessories { get; set; }
 
 		[DefaultValue(false)]
