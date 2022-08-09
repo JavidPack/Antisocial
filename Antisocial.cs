@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace Antisocial
 {
 	public class Antisocial : Mod
 	{
 		internal Item hoveredItem;
+		internal bool hoveredItemIsSocialArmor;
+		internal string socialArmorSetBonus;
 
 		internal const string ModifyAntiSocialConfig_Permission = "ModifyAntisocialConfig";
 		internal const string ModifyAntiSocialConfig_Display = "Modify Antisocial Config";
@@ -20,7 +23,8 @@ namespace Antisocial
 			// EquipArmorVanity = 9;
 			// EquipAccessoryVanity = 11;
 			hoveredItem = null;
-			if (context == 11) {
+			hoveredItemIsSocialArmor = false;
+			if (context == ItemSlot.Context.EquipAccessoryVanity) {
 				int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
 				// GetAmountOfExtraAccessorySlotsToShow only cared about what can be shown, not what is available, IsAValidEquipmentSlotForIteration is for "can this be used".
 				int maxSlotToAffect = socialAccessories == -1 ? 20 : 13 + socialAccessories;
@@ -30,8 +34,9 @@ namespace Antisocial
 					Main.HoverItem.social = false;
 				}
 			}
-			if (context == 9 && ModContent.GetInstance<ServerConfig>().SocialArmor) {
+			if (context == ItemSlot.Context.EquipArmorVanity && ModContent.GetInstance<ServerConfig>().SocialArmor) {
 				hoveredItem = Main.HoverItem;
+				hoveredItemIsSocialArmor = true;
 				Main.HoverItem.social = false;
 			}
 		}
@@ -77,6 +82,7 @@ namespace Antisocial
 				Player.head = Player.armor[0].headSlot;
 				Player.body = Player.armor[1].bodySlot;
 				Player.legs = Player.armor[2].legSlot;
+				string originalSetBonus = Player.setBonus;
 				Player.UpdateArmorSets(Player.whoAmI);
 				Utils.Swap<Item>(ref Player.armor[0], ref Player.armor[10]);
 				Utils.Swap<Item>(ref Player.armor[1], ref Player.armor[11]);
@@ -84,6 +90,8 @@ namespace Antisocial
 				Player.head = Player.armor[0].headSlot;
 				Player.body = Player.armor[1].bodySlot;
 				Player.legs = Player.armor[2].legSlot;
+				ModContent.GetInstance<Antisocial>().socialArmorSetBonus = Player.setBonus;
+				Player.setBonus = originalSetBonus;
 			}
 		}
 	}
@@ -99,7 +107,14 @@ namespace Antisocial
 			//if (item.social && (item.headSlot > 0 || item.bodySlot > 0 || item.legSlot > 0) && ModContent.GetInstance<ServerConfig>().SocialArmor) {
 			//	addTooltip = true;
 			//}
-			if (item == ModContent.GetInstance<Antisocial>().hoveredItem) {
+			// TODO: Calamity compat: Platinum armor set change not taking place due to calamity code placement:
+			// Main.NewText(Main.LocalPlayer.pickSpeed);
+			Antisocial antisocial = ModContent.GetInstance<Antisocial>();
+			if (item == antisocial.hoveredItem) {
+				if (antisocial.hoveredItemIsSocialArmor && antisocial.socialArmorSetBonus != "") {
+					tooltips.Add(new TooltipLine(Mod, "SocialArmorSetCheat", Lang.tip[48].Value + " " + antisocial.socialArmorSetBonus));
+				}
+
 				//tooltips.RemoveAll(x => x.Name == "Social" || x.Name == "SocialDesc");
 				tooltips.Add(new TooltipLine(Mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
 			}
