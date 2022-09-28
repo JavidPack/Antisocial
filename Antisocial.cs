@@ -90,7 +90,8 @@ namespace Antisocial
 				Player.head = Player.armor[0].headSlot;
 				Player.body = Player.armor[1].bodySlot;
 				Player.legs = Player.armor[2].legSlot;
-				ModContent.GetInstance<Antisocial>().socialArmorSetBonus = Player.setBonus;
+				if(Player.whoAmI == Main.myPlayer)
+					ModContent.GetInstance<Antisocial>().socialArmorSetBonus = Player.setBonus; // Move to ModPlayer?
 				Player.setBonus = originalSetBonus;
 			}
 		}
