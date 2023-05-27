@@ -2,6 +2,6 @@
 
 A config allows for social armor to also be used, as well as limiting the number of affected social accessory slots.
 
-When using HerosMod, the "Modify Antisocial Config" can be used to limit who can change the config settings.
+Modded accessory slots are also affected, there is a config toggle for this behavior as well.
 
-In 1.4, you can no longer place accessories that don't appear on the player in social slots, so you'll have to place accessories with visuals on the social slots and those without on the normal slots.
+When using HERO's Mod, the "Modify Antisocial Config" can be used to limit who can change the config settings.

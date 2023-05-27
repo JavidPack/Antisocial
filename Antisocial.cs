@@ -15,23 +15,32 @@ namespace Antisocial
 		internal const string ModifyAntiSocialConfig_Display = "Modify Antisocial Config";
 
 		public override void Load() {
-			On.Terraria.UI.ItemSlot.MouseHover_ItemArray_int_int += ItemSlot_MouseHover_ItemArray_int_int;
+			Terraria.UI.On_ItemSlot.MouseHover_ItemArray_int_int += ItemSlot_MouseHover_ItemArray_int_int;
 		}
 
-		private void ItemSlot_MouseHover_ItemArray_int_int(On.Terraria.UI.ItemSlot.orig_MouseHover_ItemArray_int_int orig, Item[] inv, int context, int slot) {
+		private void ItemSlot_MouseHover_ItemArray_int_int(Terraria.UI.On_ItemSlot.orig_MouseHover_ItemArray_int_int orig, Item[] inv, int context, int slot) {
 			orig(inv, context, slot);
 			// EquipArmorVanity = 9;
 			// EquipAccessoryVanity = 11;
 			hoveredItem = null;
 			hoveredItemIsSocialArmor = false;
 			if (context == ItemSlot.Context.EquipAccessoryVanity) {
-				int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
-				// GetAmountOfExtraAccessorySlotsToShow only cared about what can be shown, not what is available, IsAValidEquipmentSlotForIteration is for "can this be used".
-				int maxSlotToAffect = socialAccessories == -1 ? 20 : 13 + socialAccessories;
-				bool skip = slot == 18 && !Main.LocalPlayer.IsAValidEquipmentSlotForIteration(18) || slot == 19 && !Main.LocalPlayer.IsAValidEquipmentSlotForIteration(19);
-				if (!skip && slot < maxSlotToAffect) {
-					hoveredItem = Main.HoverItem;
-					Main.HoverItem.social = false;
+				if (inv == Main.LocalPlayer.armor) {
+					int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
+					// GetAmountOfExtraAccessorySlotsToShow only cared about what can be shown, not what is available, IsAValidEquipmentSlotForIteration is for "can this be used".
+					int maxSlotToAffect = socialAccessories == -1 ? 20 : 13 + socialAccessories;
+					bool skip = slot == 18 && !Main.LocalPlayer.IsItemSlotUnlockedAndUsable(18) || slot == 19 && !Main.LocalPlayer.IsItemSlotUnlockedAndUsable(19);
+					if (!skip && slot < maxSlotToAffect) {
+						hoveredItem = Main.HoverItem;
+						Main.HoverItem.social = false;
+					}
+				}
+				else {
+					// Is a modded slot.
+					if (ModContent.GetInstance<ServerConfig>().ModdedAccessorySlots) {
+						hoveredItem = Main.HoverItem;
+						Main.HoverItem.social = false;
+					}
 				}
 			}
 			if (context == ItemSlot.Context.EquipArmorVanity && ModContent.GetInstance<ServerConfig>().SocialArmor) {
@@ -55,21 +64,43 @@ namespace Antisocial
 
 	public class AntisocialPlayer : ModPlayer
 	{
-        public override void UpdateEquips()
-        {
-			int start = ModContent.GetInstance<ServerConfig>().SocialArmor ? 10 : 13;
-			int socialAccessories = ModContent.GetInstance<ServerConfig>().SocialAccessories;
+		public override void UpdateEquips() {
+			ServerConfig serverConfig = ModContent.GetInstance<ServerConfig>();
+			int start = serverConfig.SocialArmor ? 10 : 13;
+			int socialAccessories = serverConfig.SocialAccessories;
 			int end = socialAccessories == -1 ? 20 : 13 + socialAccessories;
 			end = Utils.Clamp(end, 13, 20);
 
 			for (int k = start; k < end; k++) {
-				if (Player.IsAValidEquipmentSlotForIteration(k))
-					Player.VanillaUpdateEquip(Player.armor[k]);
+				Item item = Player.armor[k];
+				if (!item.IsAir && Player.IsItemSlotUnlockedAndUsable(k) && (!item.expertOnly || Main.expertMode)) {
+					if (item.accessory)
+						Player.GrantPrefixBenefits(item);
+
+					Player.GrantArmorBenefits(item);
+				}
 			}
-			for (int l = start; l < end; l++)
-			{
-				if (Player.IsAValidEquipmentSlotForIteration(l))
+			for (int l = 13; l < end; l++) {
+				if (Player.IsItemSlotUnlockedAndUsable(l))
 					Player.ApplyEquipFunctional(Player.armor[l], Player.hideVisibleAccessory[l - 10]);
+			}
+
+			// TODO: test this with a mod that actually uses this.
+			if (serverConfig.ModdedAccessorySlots) {
+				var loader = LoaderManager.Get<AccessorySlotLoader>();
+				var bonusSlotPlayer = Player.GetModPlayer<Terraria.ModLoader.Default.ModAccessorySlotPlayer>();
+				for (int k = 0; k < bonusSlotPlayer.SlotCount; k++) {
+					if (loader.ModdedIsItemSlotUnlockedAndUsable(k, Player)) {
+						var slot = loader.Get(k, Player);
+						Item item = slot.VanityItem;
+
+						if (item.accessory)
+							Player.GrantPrefixBenefits(item);
+
+						Player.GrantArmorBenefits(item);
+						Player.ApplyEquipFunctional(item, slot.HideVisuals);
+					}
+				}
 			}
 		}
 
@@ -83,6 +114,11 @@ namespace Antisocial
 				Player.body = Player.armor[1].bodySlot;
 				Player.legs = Player.armor[2].legSlot;
 				string originalSetBonus = Player.setBonus;
+				/*
+				for (int i = 0; i < 10; i++) {
+					// TODO: armor set stat multiplier! Needs tooltip hint, equip and sets, and original set.
+				}
+				*/
 				Player.UpdateArmorSets(Player.whoAmI);
 				Utils.Swap<Item>(ref Player.armor[0], ref Player.armor[10]);
 				Utils.Swap<Item>(ref Player.armor[1], ref Player.armor[11]);
@@ -90,7 +126,7 @@ namespace Antisocial
 				Player.head = Player.armor[0].headSlot;
 				Player.body = Player.armor[1].bodySlot;
 				Player.legs = Player.armor[2].legSlot;
-				if(Player.whoAmI == Main.myPlayer)
+				if (Player.whoAmI == Main.myPlayer)
 					ModContent.GetInstance<Antisocial>().socialArmorSetBonus = Player.setBonus; // Move to ModPlayer?
 				Player.setBonus = originalSetBonus;
 			}
@@ -122,4 +158,3 @@ namespace Antisocial
 		}
 	}
 }
-

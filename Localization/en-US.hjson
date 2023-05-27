@@ -1,0 +1,29 @@
+Mods: {
+	Antisocial: {
+		Configs: {
+			ServerConfig: {
+				DisplayName: Antisocial
+				YouLackTheXPermission: You lack the "{0}" permission.
+
+				SocialAccessories: {
+					Label: "[i:156] Antisocial Accessories"
+					Tooltip:
+						'''
+						Customize how many slots are anti-social slots. -1 means all.
+						Note that the master mode slot is #7, even if the demon heart slot is not unlocked and displayed
+						'''
+				}
+
+				SocialArmor: {
+					Label: "[i:82] Antisocial Armor"
+					Tooltip: If true, social armor will also have effect. Be aware that it is buggy with some armor set bonuses.
+				}
+
+				ModdedAccessorySlots: {
+					Label: "[i:AnkhShield] Modded Accessory Slots"
+					Tooltip: If true, social accessories from accessory slots added by mods will also behave as normal accessory slots.
+				}
+			}
+		}
+	}
+}
