@@ -2,28 +2,28 @@ Mods: {
 	Antisocial: {
 		Configs: {
 			ServerConfig: {
-				// DisplayName: Antisocial
-				// YouLackTheXPermission: You lack the "{0}" permission.
+				DisplayName: Antisocial
+				YouLackTheXPermission: У вас нет разрешения "{0}".
 
 				SocialAccessories: {
-					// Label: "[i:156] Antisocial Accessories"
-					/* Tooltip:
+					Label: "[i:156] Antisocial аксессуары"
+					Tooltip:
 						'''
-						Customize how many slots are anti-social slots. -1 means all.
-						Note that the master mode slot is #7, even if the demon heart slot is not unlocked and displayed
-						''' */
+						Настройте, сколько слотов являются AntiSocial слотами. -1 означает все.
+						Обратите внимание, что слот мастер мода — № 7, даже если слот сердца демона не разблокирован и не отображается.
+						'''
 				}
 
 				SocialArmor: {
-					// Label: "[i:82] Antisocial Armor"
-					// Tooltip: If true, social armor will also have effect. Be aware that it is buggy with some armor set bonuses.
-				}
+					Label: "[i:82] Antisocial броня"
+					Tooltip: Если true, antisocial броня также будет действовать. Имейте в виду, что он не работает с некоторыми бонусами комплектов брони.
+}
 
 				ModdedAccessorySlots: {
-					// Label: "[i:AnkhShield] Modded Accessory Slots"
-					// Tooltip: If true, social accessories from accessory slots added by mods will also behave as normal accessory slots.
-				}
-			}
-		}
+					Label: "[i:AnkhShield] Модифицированные слоты для аксессуаров"
+					Tooltip: Если это правда, social аксессуары из слотов для аксессуаров, добавленных модами, также будут вести себя как обычные слоты для аксессуаров.
+}
+}
+}
 	}
 }
