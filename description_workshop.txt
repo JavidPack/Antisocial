@@ -1,4 +1,6 @@
-﻿Antisocial allows all social accessory slots to be used as normal accessory slots. It's super cheaty, obviously.
+﻿[img]https://i.imgur.com/W2c5CX6.gif[/img]
+
+Antisocial allows all social accessory slots to be used as normal accessory slots. It's super cheaty, obviously.
 
 A config allows for social armor to also be used, as well as limiting the number of affected social accessory slots.
 
