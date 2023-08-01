@@ -1,0 +1,2 @@
+en-US, 8/8, 100%, missing 0
+ru-RU, 8/8, 100%, missing 0
