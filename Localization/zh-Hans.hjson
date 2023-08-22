@@ -2,26 +2,26 @@ Mods: {
 	Antisocial: {
 		Configs: {
 			ServerConfig: {
-				// DisplayName: Antisocial
-				// YouLackTheXPermission: You lack the "{0}" permission.
+				 DisplayName: 时装栏饰品
+				 YouLackTheXPermission: 您缺少"{0}"权限。
 
 				SocialAccessories: {
-					// Label: "[i:156] Antisocial Accessories"
-					/* Tooltip:
+					 Label: "[i:156] 时装栏饰品"
+					 Tooltip:
 						'''
-						Customize how many slots are anti-social slots. -1 means all.
-						Note that the master mode slot is #7, even if the demon heart slot is not unlocked and displayed
-						''' */
+						自定义时装栏可装饰品的数量，-1代表全部
+						请注意，大师模式栏是#7，即使恶魔之心栏没有解锁和显示
+						''' 
 				}
 
 				SocialArmor: {
-					// Label: "[i:82] Antisocial Armor"
-					// Tooltip: If true, social armor will also have effect. Be aware that it is buggy with some armor set bonuses.
+					 Label: "[i:82] 时装栏盔甲"
+					 Tooltip: 如果为开，时装栏盔甲也会产生作用。请注意，它带有一些护甲套装加成。
 				}
 
 				ModdedAccessorySlots: {
-					// Label: "[i:AnkhShield] Modded Accessory Slots"
-					// Tooltip: If true, social accessories from accessory slots added by mods will also behave as normal accessory slots.
+					 Label: "[i:AnkhShield] 模组饰品栏"
+					 Tooltip: 如果为开，模组添加的饰品栏中的时装栏也将被视为普通饰品栏。
 				}
 			}
 		}
