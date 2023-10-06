@@ -1,5 +1,5 @@
 ﻿author = jopojelly
-version = 1.6.0.2
+version = 1.6.0.3
 displayName = Antisocial
 homepage = https://forums.terraria.org/index.php?threads/antisocial-enables-all-social-accessory-slots.56955/
 includeSource = true
