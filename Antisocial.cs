@@ -153,7 +153,7 @@ namespace Antisocial
 				}
 
 				//tooltips.RemoveAll(x => x.Name == "Social" || x.Name == "SocialDesc");
-				tooltips.Add(new TooltipLine(Mod, "SocialCheat", "Antisocial: Stats WILL be gained"));
+				tooltips.Add(new TooltipLine(Mod, "SocialCheat", Mod.GetLocalization("Tooltips.SocialCheat").Value));
 			}
 		}
 	}

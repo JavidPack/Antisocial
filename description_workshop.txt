@@ -8,6 +8,8 @@ Modded accessory slots are also affected, there is a config toggle for this beha
 
 When using HERO's Mod, the "Modify Antisocial Config" can be used to limit who can change the config settings.
 
+[video mp4=https://github.com/user-attachments/assets/55f2c65c-b8af-4498-8147-1e8b67c18103][/video]
+
 [h1]Links[/h1]
 Source code hosted on [url=github.com/JavidPack/Antisocial]GitHub[/url], collaboration welcome
 For questions or suggestions, come to my Discord: [url=discord.gg/w8Hcwby][img]https://discordapp.com/api/guilds/276235094622994433/widget.png?style=shield[/img][/url]

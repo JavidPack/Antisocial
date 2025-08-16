@@ -1,5 +1,7 @@
 Mods: {
 	Antisocial: {
+		// Tooltips.SocialCheat: Antisocial: Stats WILL be gained
+
 		Configs: {
 			ServerConfig: {
 				DisplayName: 时装栏饰品

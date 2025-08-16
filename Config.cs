@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -19,12 +20,13 @@ namespace Antisocial
 		[DefaultValue(true)]
 		public bool ModdedAccessorySlots { get; set; }
 
-		public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref string message) {
+		public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref NetworkText message) {
 			ModLoader.TryGetMod("HEROsMod", out Mod HEROsMod);
 			if (HEROsMod != null && HEROsMod.Version >= new Version(0, 2, 2)) {
 				if (HEROsMod.Call("HasPermission", whoAmI, Antisocial.ModifyAntiSocialConfig_Permission) is bool result && result)
 					return true;
-				message = this.GetLocalization("YouLackTheXPermission").Format(Antisocial.ModifyAntiSocialConfig_Display);
+				message = NetworkText.FromKey(this.GetLocalizationKey("YouLackTheXPermission"), Antisocial.ModifyAntiSocialConfig_Display);
+
 				return false;
 			}
 
