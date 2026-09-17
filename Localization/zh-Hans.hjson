@@ -1,6 +1,6 @@
 Mods: {
 	Antisocial: {
-		// Tooltips.SocialCheat: Antisocial: Stats WILL be gained
+		Tooltips.SocialCheat: 时装栏饰品: 属性加成将生效
 
 		Configs: {
 			ServerConfig: {
